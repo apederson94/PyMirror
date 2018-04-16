@@ -1,4 +1,5 @@
-import sys, subprocess, urllib.request, json
+import sys, subprocess, urllib.request, json, datetime, tzlocal
+from darksky import forecast
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
 from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QStaticText, QFont
 from PyQt5.QtCore import Qt, QRect
@@ -49,12 +50,59 @@ class App(QWidget):
 
     #retrieves weather from Dark Sky
     def getWeather(self):
-        response = urllib.request.urlopen('https://api.darksky.net/forecast/c663651149db5b56479353e7968d6db7/42.3601,-71.0589')
-        response = response.read().decode('utf-8')
-        dictionary = dict()
-        for i in range(0, len(response) - 1):
-            dictionary.update({str(response[i]) : response[i+1]})
-        print(dictionary)
+        
+        #DarkSky API key
+        key = 'c663651149db5b56479353e7968d6db7'
+
+        #retrieving local forecast
+        homeWeather = forecast(key, 35.1983, -111.651)
+
+        #extracting daily weather
+        currentTemp = homeWeather.temperature
+        daily_data = homeWeather.daily[0]
+        highTemp = daily_data.temperatureMax
+        lowTemp = daily_data.precipType
+        precipChance = daily_data.precipProbability
+        windSpeed = daily_data.windSpeed
+        windGust = daily_data.windGust
+        sunrise = daily_data.sunriseTime
+        sunset = daily_data.sunsetTime
+
+        #extracting weather alerts
+        alerts = homeWeather.alerts[0]
+        alertTitle = alerts.title
+        alertStart = alerts.time
+        alertEnd = alerts.expires
+
+        # #dates for weekly forecast
+        # date_1 = datetime.date.today() + datetime.timedelta(days=1)
+        # date_2 = datetime.date.today() + datetime.timedelta(days=2)
+        # date_3 = datetime.date.today() + datetime.timedelta(days=3)
+        # date_4 = datetime.date.today() + datetime.timedelta(days=4)
+        # date_5 = datetime.date.today() + datetime.timedelta(days=5)
+        # date_6 = datetime.date.today() + datetime.timedelta(days=6)
+
+        # response = urllib.request.urlopen('https://api.darksky.net/forecast/c663651149db5b56479353e7968d6db7/35.1983,111.6513,%sT12:00:00' % date_1)
+        # response = response.read().decode('utf-8')
+        # json_response = json.loads(response)
+
+
+
+        
+
+        # #extracting 
+
+        # self.weatherData = {
+        #     "currentTemp" : currentTemp, "highTemp" : highTemp, "lowTemp" : lowTemp, 
+        #     "precipType" : precipType, "precipChance" : precipChance, "windSpeed" : windSpeed,
+        #     "windGust" : windGust, "sunrise" : sunrise, "sunset" : sunset,
+        #     "alertTitle" : alertTitle, "alertStart" : alertStart, "alertEnd" : alertEnd
+        # }
+
+
+
+        
+        
         
     
     #grabs primary screen dimensions from linux commands
@@ -66,11 +114,9 @@ class App(QWidget):
         p.stdout.close()
 
         resolution_string, junk = p2.communicate()
-        resolution = resolution_string.split()[0]
-        resolution = str(resolution)
+        resolution = resolution_string.split()[0].decode('utf-8')
         width, height = resolution.split('x')
-        self.width = int(width[2:])
-        self.height = int(height[:len(height)-1])
+        self.width, self.height = int(width), int(height)
 
     #paints events
     def paintEvent(self, event):
