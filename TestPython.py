@@ -6,10 +6,15 @@ from darksky import forecast
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
 from PyQt5.QtGui import QIcon, QPainter, QColor, QPen, QStaticText, QFont
 from PyQt5.QtCore import Qt, QRect
- 
+
+#TODO: WEATHER
+    #FIGURE OUT PRECIP TYPE
 #TODO: GOOGLE CALENDAR/SCHEDULE
+    #HAVE BASIC CALENDAR FUNCTION
 #TODO: TOUCH FUNCTIONS
+    #MAYBE VOICE CONTROL INSTEAD?
 #TODO: DAILY NEWS
+    #GETSTREAM.IO FOR NEWS INTEGRATION
 #TODO: GREETING
 
 class App(QWidget):
@@ -91,7 +96,7 @@ class App(QWidget):
         daily_data = homeWeather.daily[0]
         highTemp = daily_data.temperatureMax
         lowTemp = daily_data.temperatureMin
-        precipType = daily_data.precipType
+        #precipType = daily_data.precipType
         precipChance = daily_data.precipProbability
         windSpeed = daily_data.windSpeed
         windGust = daily_data.windGust
@@ -106,7 +111,7 @@ class App(QWidget):
 
         #creating dailyWeather dictionary
         day = datetime.datetime.now()
-        self.dailyWeather = {day.strftime('%a') : [currentTemp, highTemp, lowTemp, precipType, precipChance, windSpeed, windGust, sunrise, sunset]}
+        self.dailyWeather = {day.strftime('%a') : [currentTemp, highTemp, lowTemp, precipChance, windSpeed, windGust, sunrise, sunset]}
         
         #extracting weekly weather
         weeklyWeather = {}
