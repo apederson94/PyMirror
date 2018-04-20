@@ -1,0 +1,6 @@
+pytest==3.2.5
+python-coveralls
+unittest2
+pytest-cov==2.5.1
+python-dateutil
+-e .

@@ -68,7 +68,6 @@ def getWeather():
         alertStart = -1
         alertEnd = -1
         
-
     #creating dailyWeather list
     day = datetime.datetime.now()
     dailyWeather = [currentTemp, highTemp, lowTemp, precipChance, precipType, windSpeed, windGust, sunrise, sunset]
