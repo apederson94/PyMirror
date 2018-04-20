@@ -5,7 +5,7 @@ from apiclient.discovery import build
 from httplib2 import Http
 
 #retrieves calendar events
-def getCalendar(self):
+def getCalendar():
     # Setup the Calendar API
     SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
     store = file.Storage('credentials.json')
@@ -23,15 +23,16 @@ def getCalendar(self):
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
 
-    if not events:
-        print('No upcoming events found.')
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
+    return events
+    # if not events:
+    #     print('No upcoming events found.')
+    # for event in events:
+    #     start = event['start'].get('dateTime', event['start'].get('date'))
+    #     print(start, event['summary'])
 
 
 #retrieves weather from Dark Sky
-def getWeather(self):
+def getWeather():
     
     #DarkSky API key
     key = 'c663651149db5b56479353e7968d6db7'
@@ -44,7 +45,11 @@ def getWeather(self):
     daily_data = homeWeather.daily[0]
     highTemp = daily_data.temperatureMax
     lowTemp = daily_data.temperatureMin
-    #precipType = daily_data.precipType
+    try:
+        precipType = daily_data.precipType
+    except:
+        precipType = 0
+        print('no precip type found')
     precipChance = daily_data.precipProbability
     windSpeed = daily_data.windSpeed
     windGust = daily_data.windGust
@@ -52,14 +57,17 @@ def getWeather(self):
     sunset = daily_data.sunsetTime
 
     #extracting weather alerts
-    alerts = homeWeather.alerts[0]
-    alertTitle = alerts.title
-    alertStart = alerts.time
-    alertEnd = alerts.expires
+    try:
+        alerts = homeWeather.alerts[0]
+        alertTitle = alerts.title
+        alertStart = alerts.time
+        alertEnd = alerts.expires
+    except:
+        print('no alerts found')
 
-    #creating dailyWeather dictionary
+    #creating dailyWeather list
     day = datetime.datetime.now()
-    self.dailyWeather = {day.strftime('%a') : [currentTemp, highTemp, lowTemp, precipChance, windSpeed, windGust, sunrise, sunset]}
+    dailyWeather = [currentTemp, highTemp, lowTemp, precipChance, precipType, windSpeed, windGust, sunrise, sunset]
     
     #extracting weekly weather
     weeklyWeather = {}
@@ -67,11 +75,11 @@ def getWeather(self):
         daily_data = homeWeather.daily[i]
         weeklyWeather.update({day.strftime('%a') : [daily_data.temperatureMax, daily_data.temperatureMin, daily_data.precipProbability]})
         day += datetime.timedelta(days=1)
-    
-    self.weeklyWeather = weeklyWeather
+
+    return [dailyWeather, weeklyWeather]
 
 #grabs primary screen dimensions from linux commands
-def initDimensions(self):
+def initDimensions():
     cmd = ['xrandr']
     cmd2 = ['grep', '*']
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
@@ -81,4 +89,5 @@ def initDimensions(self):
     resolution_string, junk = p2.communicate()
     resolution = resolution_string.split()[0].decode('utf-8')
     width, height = resolution.split('x')
-    self.width, self.height = int(width), int(height)
+    width, height = int(width), int(height)
+    return width, height

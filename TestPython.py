@@ -35,10 +35,10 @@ class App(QWidget):
 
     #varaible initializations
     def initVars(self):
-        initDimensions(self)
+        self.width, self.height = initDimensions()
         self.initBackground()
-        getWeather(self)
-        getCalendar(self)
+        self.weather = getWeather()
+        self.calEvents = getCalendar()
 
     #initializes background color to black
     def initBackground(self):
