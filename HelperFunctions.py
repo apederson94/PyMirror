@@ -45,16 +45,16 @@ def getWeather():
     daily_data = homeWeather.daily[0]
     highTemp = daily_data.temperatureMax
     lowTemp = daily_data.temperatureMin
-    try:
-        precipType = daily_data.precipType
-    except:
-        precipType = 0
-        print('no precip type found')
-    precipChance = daily_data.precipProbability
     windSpeed = daily_data.windSpeed
     windGust = daily_data.windGust
     sunrise = daily_data.sunriseTime
     sunset = daily_data.sunsetTime
+    precipChance = daily_data.precipProbability
+    try:
+        precipType = daily_data.precipType
+    except:
+        precipType = -1
+        print('no precip type found')
 
     #extracting weather alerts
     try:
@@ -64,6 +64,10 @@ def getWeather():
         alertEnd = alerts.expires
     except:
         print('no alerts found')
+        alertTitle = -1
+        alertStart = -1
+        alertEnd = -1
+        
 
     #creating dailyWeather list
     day = datetime.datetime.now()
