@@ -3,6 +3,7 @@ from oauth2client import file, client, tools
 from darksky import forecast
 from apiclient.discovery import build
 from httplib2 import Http
+from PyQt5.QtGui import QFont, QFontMetrics
 
 #retrieves calendar events
 def getCalendar():
@@ -41,15 +42,15 @@ def getWeather():
     homeWeather = forecast(key, 35.1983, -111.651)
 
     #extracting daily weather
-    currentTemp = homeWeather.temperature
+    currentTemp = str(homeWeather.temperature) + "°"
     daily_data = homeWeather.daily[0]
-    highTemp = daily_data.temperatureMax
-    lowTemp = daily_data.temperatureMin
-    windSpeed = daily_data.windSpeed
-    windGust = daily_data.windGust
-    sunrise = daily_data.sunriseTime
-    sunset = daily_data.sunsetTime
-    precipChance = daily_data.precipProbability
+    highTemp = str(daily_data.temperatureMax) + "°"
+    lowTemp = str(daily_data.temperatureMin) + "°"
+    windSpeed = str(daily_data.windSpeed) + " mph"
+    windGust = str(daily_data.windGust) + " mph"
+    sunrise = datetime.datetime.fromtimestamp(daily_data.sunriseTime).strftime('%I:%M') + " AM"
+    sunset = datetime.datetime.fromtimestamp(daily_data.sunsetTime).strftime('%I:%M') + " PM"
+    precipChance = str(daily_data.precipProbability) + "%"
     try:
         precipType = daily_data.precipType
     except:
@@ -73,10 +74,10 @@ def getWeather():
     dailyWeather = [currentTemp, highTemp, lowTemp, precipChance, precipType, windSpeed, windGust, sunrise, sunset]
     
     #extracting weekly weather
-    weeklyWeather = {}
+    weeklyWeather = []
     for i in range(1, 7):
         daily_data = homeWeather.daily[i]
-        weeklyWeather.update({day.strftime('%a') : [daily_data.temperatureMax, daily_data.temperatureMin, daily_data.precipProbability]})
+        weeklyWeather.append([daily_data.temperatureMax, daily_data.temperatureMin, daily_data.precipProbability])
         day += datetime.timedelta(days=1)
 
     return [dailyWeather, weeklyWeather]
@@ -94,3 +95,7 @@ def initDimensions():
     width, height = resolution.split('x')
     width, height = int(width), int(height)
     return width, height
+
+def getStringDims(text, font):
+    metrics = QFontMetrics(font)
+    return metrics.boundingRect(text)

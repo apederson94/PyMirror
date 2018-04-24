@@ -21,7 +21,7 @@ class App(QWidget):
     #initialization of QWidget object
     def __init__(self):
         super().__init__()
-        self.title = 'Ashley\'s SmartMirror'
+        self.title = 'PyMirror'
         self.left = 10
         self.top = 10
         self.width = 640
@@ -38,6 +38,7 @@ class App(QWidget):
     #varaible initializations
     def initVars(self):
         self.width, self.height = initDimensions()
+        self.titleSize = self.width/64
         self.initBackground()
         self.weather = getWeather()
         self.calEvents = getCalendar()
@@ -68,18 +69,37 @@ class App(QWidget):
 
         #drawing main title
         qp.setPen(QColor(255, 255, 255))
-        font = QFont('Helvetica', 20)
+        font = QFont('Helvetica', self.titleSize)
         font.setBold(True)
+        titleDims = getStringDims(self.title, font)
         qp.setFont(font)
-        titleRect = QRect(self.width/2 - 140, 0, 280, 40)
+        titleRect = QRect((self.width/2) - (titleDims.width()/2), 0, titleDims.width(), titleDims.height())
         qp.drawText(titleRect, Qt.AlignLeft, self.title)
         
         #drawing Weather title
         font.setBold(False)
         font.setUnderline(True)
+        titleDims = getStringDims(self.title, font)
         qp.setFont(font)
-        weatherRect = QRect(80, 100, 250, 500)
+        weatherX = self.width/12
+        weatherY = self.height/12
+        weatherRect = QRect(weatherX, weatherY, titleDims.width(), titleDims.height())
         qp.drawText(weatherRect, Qt.AlignLeft, 'Weather')
+
+        #setting up weather vars
+        dailyWeather = self.weather[0]
+        weeklyWeather = self.weather[1]
+        font.setUnderline(False)
+        font.setPointSize(self.titleSize/1.25)
+        qp.setFont(font)
+        weatherX = weatherX - self.width/24
+        yoffset = self.height/24
+
+        for event in dailyWeather:
+            textDims = getStringDims(event, font)
+            drawRect = QRect(weatherX, weatherY+yoffset, textDims.width(), textDims.height())
+            qp.drawText(drawRect, Qt.AlignLeft, event)
+            yoffset = yoffset + textDims.height()
  
 if __name__ == '__main__':
     app = QApplication(sys.argv)
